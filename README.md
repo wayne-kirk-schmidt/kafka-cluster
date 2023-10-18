@@ -54,9 +54,9 @@ The scripts are organized into sub directories:
 
     1. ./bin - has all of the scripts here
 
-    2. ./doc - this has reference information including sample emojis 
+    2. ./doc - this has reference information
 
-    3. ./etc - this contains any specific configuration files required for installation
+    3. ./etc - this contains any specific configuration files required
 
 Examples
 ========
