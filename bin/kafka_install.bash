@@ -13,7 +13,14 @@ apt-get update -y && apt-get upgrade -y
 ### Now install basic packages that can be easily installed by apt-get
 apt-get install -y vim openjdk-11-jre-headless openjdk-11-jdk \
 zookeeper wget apt-transport-https ca-certificates \
-curl gnupg-agent gnupg software-properties-common logstash
+curl gnupg-agent gnupg software-properties-common
+
+### Now install logstash
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+
+apt-get update -y
+apt-get install -y logstash
+
 
 ### Create and download directory
 export DOWNLOAD_DIR="/var/tmp/downloads"
@@ -34,20 +41,30 @@ export KAFKA_FILE=$( curl -s ${BASEURL}/${KAFKA_BASE}/ | \
         egrep -i '\[\s+\]' | egrep -iv '(src|docs).tgz' | \
         grep -o -E 'href="[^"]+"' | cut -d'"' -f2 | sort -rbn | head -1 )
 
+rm -f ${DOWNLOAD_DIR}/${KAFKA_FILE}
+
 wget ${BASEURL}${KAFKA_BASE}/${KAFKA_FILE}
 
 ### Unpack and install the installation image
 export KAFKAFILE=$( ls -1d kafka*.tgz)
 
-tar -xvf $KAFKAFILE
+tar -xf $KAFKAFILE
 
 export KAFKADIR=$( basename $KAFKAFILE .tgz )
 export KAFKA_BASE_DIR="/usr/local/kafka"
-
 mkdir -p ${KAFKA_BASE_DIR}
 
+export KAFKA_ETC_DIR="/etc/kafka"
+mkdir -p ${KAFKA_ETC_DIR}
+
+export KAFKA_SVC_DIR="/etc/systemd/system"
+mkdir -p ${KAFKA_SVC_DIR}
+
 mv $KAFKADIR/* ${KAFKA_BASE_DIR}
+
 touch ${KAFKA_BASE_DIR}/$KAFKADIR
+
+rm -f ${DOWNLOAD_DIR}/${KAFKA_FILE}
 
 ### Define the bin and the etc directory as related to the running script
 export BINDIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
@@ -57,8 +74,8 @@ export ETCDIR=$( realpath $BINDIR/../etc )
 export SRC_KAFKA_CFG="$ETCDIR/server.properties"
 export SRC_ZOOKEEPER_CFG="$ETCDIR/zookeeper.properties"
 
-export DST_KAFKA_CFG="/etc/kafka/server.properties"
-export DST_ZOOKEEPER_CFG="/etc/kafka/zookeeper.properties"
+export DST_KAFKA_CFG="$KAFKA_ETC_DIR/server.properties"
+export DST_ZOOKEEPER_CFG="$KAFKA_ETC_DIR/zookeeper.properties"
 
 ### Install the appropriate configuration files
 cp ${SRC_KAFKA_CFG} ${DST_KAFKA_CFG}
@@ -68,8 +85,8 @@ cp ${SRC_ZOOKEEPER_CFG} ${DST_ZOOKEEPER_CFG}
 export SRC_KAFKA_SVC="$ETCDIR/kafka.service"
 export SRC_ZOOKEEPER_SVC="$ETCDIR/zookeeper.service"
 
-export DST_KAFKA_SVC="/etc/kafka/kafka.service"
-export DST_ZOOKEEPER_SVC="/etc/kafka/zookeeper.service"
+export DST_KAFKA_SVC="$KAFKA_SVC_DIR/kafka.service"
+export DST_ZOOKEEPER_SVC="$KAFKA_SVC_DIR/zookeeper.service"
 
 ### Install the appropriate service definition files
 cp ${SRC_KAFKA_SVC} ${DST_KAFKA_SVC}
@@ -78,10 +95,14 @@ cp ${SRC_ZOOKEEPER_SVC} ${DST_ZOOKEEPER_SVC}
 ### Now start the kafka service
 systemctl start kafka
 systemctl enable kafka
-systemctl status kafka
+systemctl status kafka | grep -E -i 'Active|PID'
 
 ### Now start the zookeeper service
 systemctl start zookeeper
 systemctl enable zookeeper
-systemctl status zookeeper
+systemctl status zookeeper | grep -E -i 'Active|PID'
 
+### Now start the logstash service
+systemctl start logstash
+systemctl enable logstash
+systemctl status logstash | grep -E -i 'Active|PID'
