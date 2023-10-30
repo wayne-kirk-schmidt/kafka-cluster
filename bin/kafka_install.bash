@@ -4,6 +4,13 @@
 umask 022
 export PATH="/usr/bin:/usr/local/bin:/sbin:/usr/sbin:$PATH"
 
+### Define the bin and the etc directory as related to the running script
+export BINDIR=$(dirname "$(realpath "$0")")
+export ETCDIR=$( realpath $BINDIR/../etc )
+
+### Define the download directory
+export DOWNLOAD_DIR="/var/tmp/downloads"
+
 ### Setup apt-get and following scripts to be non-interactive
 export DEBIAN_FRONTEND=noninteractive
 
@@ -16,7 +23,6 @@ zookeeper wget apt-transport-https ca-certificates \
 curl gnupg-agent gnupg software-properties-common
 
 ### Now Prepare to install logstash
-
 export ELASTICKEY="/usr/share/keyrings/elastic-keyring.gpg"
 export ELASTICSRC="https://artifacts.elastic.co/packages/8.x/apt"
 
@@ -30,9 +36,7 @@ echo "deb [signed-by=$ELASTICKEY] $ELASTICSRC stable main" | \
 apt-get update -y
 apt-get install -y logstash
 
-### Create and download directory
-export DOWNLOAD_DIR="/var/tmp/downloads"
-
+### Prepare download directory for non debian package installations
 mkdir -p ${DOWNLOAD_DIR}
 cd ${DOWNLOAD_DIR}
 
