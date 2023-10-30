@@ -15,12 +15,20 @@ apt-get install -y vim openjdk-11-jre-headless openjdk-11-jdk \
 zookeeper wget apt-transport-https ca-certificates \
 curl gnupg-agent gnupg software-properties-common
 
-### Now install logstash
-wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+### Now Prepare to install logstash
 
+export ELASTICKEY="/usr/share/keyrings/elastic-keyring.gpg"
+export ELASTICSRC="https://artifacts.elastic.co/packages/8.x/apt"
+
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | \
+	gpg --dearmor -o "$ELASTICKEY"
+
+echo "deb [signed-by=$ELASTICKEY] $ELASTICSRC stable main" | \
+	sudo tee -a /etc/apt/sources.list.d/elastic-8.x.list
+
+### Now install logstash
 apt-get update -y
 apt-get install -y logstash
-
 
 ### Create and download directory
 export DOWNLOAD_DIR="/var/tmp/downloads"
