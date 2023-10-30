@@ -78,10 +78,6 @@ touch ${KAFKA_BASE_DIR}/$KAFKADIR
 
 rm -f ${DOWNLOAD_DIR}/${KAFKA_FILE}
 
-### Define the bin and the etc directory as related to the running script
-export BINDIR=$(dirname "$(realpath "$0")")
-export ETCDIR=$( realpath $BINDIR/../etc )
-
 ### Setup the appropriate variables for the properties files
 export SRC_KAFKA_CFG="$ETCDIR/server.properties"
 export SRC_ZOOKEEPER_CFG="$ETCDIR/zookeeper.properties"
