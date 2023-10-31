@@ -72,6 +72,14 @@ mkdir -p ${KAFKA_ETC_DIR}
 export KAFKA_SVC_DIR="/etc/systemd/system"
 mkdir -p ${KAFKA_SVC_DIR}
 
+export KAFKA_DATA_DIR="/var/data/kafka"
+export ZOOKEEPER_DATA_DIR="/var/data/zookeeper"
+mkdir -p "${KAFKA_DATA_DIR}" "${ZOOKEEPER_DATA_DIR}"
+
+export KAFKA_LOGS_DIR="/var/log/kafka"
+export ZOOKEEPER_LOGS_DIR="/var/log/zookeeper"
+mkdir -p "${KAFKA_LOGS_DIR}" "${ZOOKEEPER_LOGS_DIR}"
+
 mv $KAFKADIR/* ${KAFKA_BASE_DIR}
 
 touch ${KAFKA_BASE_DIR}/$KAFKADIR
