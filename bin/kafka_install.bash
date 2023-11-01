@@ -72,8 +72,8 @@ mkdir -p "${KAFKA_ETC_DIR}"
 KAFKA_SVC_DIR="/etc/systemd/system"
 mkdir -p "${KAFKA_SVC_DIR}"
 
-KAFKA_DATA_DIR="/var/data/kafka"
-ZOOKEEPER_DATA_DIR="/var/data/zookeeper"
+KAFKA_DATA_DIR="/var/local/data/kafka"
+ZOOKEEPER_DATA_DIR="/var/local/data/zookeeper"
 mkdir -p "${KAFKA_DATA_DIR}" "${ZOOKEEPER_DATA_DIR}"
 
 KAFKA_LOGS_DIR="/var/log/kafka"
