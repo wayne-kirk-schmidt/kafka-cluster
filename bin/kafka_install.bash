@@ -17,6 +17,13 @@ export DEBIAN_FRONTEND=noninteractive
 ### Prepare the machine for installation
 apt-get update -y && apt-get upgrade -y
 
+### Disable snapd. We will be treating this as a static appliance.
+systemctl stop snapd
+systemctl disable snapd
+systemctl mask snapd
+apt-get remove -y snapd
+apt-get purge -y snapd
+
 ### Now install basic packages that can be easily installed by apt-get
 apt-get install -y vim openjdk-11-jre-headless openjdk-11-jdk \
 zookeeper wget apt-transport-https ca-certificates \
